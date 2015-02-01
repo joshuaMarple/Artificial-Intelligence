@@ -1,7 +1,8 @@
 
 # goals = [[[1,2,3],[4,5,6],[7,8,0]]]
 from copy import deepcopy
-from Queue import PriorityQueue
+# from Queue import PriorityQueue
+from unipq import unipq
 
 def index_2d(myList, v):
     for i, x in enumerate(myList):
@@ -40,7 +41,7 @@ def move(state):
     
 def node_constructor(saw, prev, goal):
 	return {'cost': saw[2] + mandistheur(saw[0], goal),
-		 'prev': prev,
+		 'prev': None,
 		 'action': saw[1],
 		 'state': saw[0]
 		}
@@ -55,27 +56,42 @@ def mandistheur(start, goal):
 			tot_sum += abs(col - cur_goal[0]) + abs(row - cur_goal[1])
 	return tot_sum 
 
+    
 def astar(start, goal):
-	pq = PriorityQueue()
-	print(move(start))
-	for i in move(start):
-		cur_node = node_constructor(i, start, goal)
-		pq.put((cur_node["cost"], cur_node))
+    # examined = PriorityQueue()
+    examined_list = set()
+    unexamined = unipq()
+    # unexamined_list = set()
+	# print(move(start))
+    # print(start)
+    # for i in move(start):
+    cur_node = node_constructor((start, None, mandistheur(start, goal)), None, goal)
+    unexamined.add((cur_node["cost"], cur_node))
+    while(not unexamined.empty()):
+        current = unexamined.pop()
+        if str(current) in examined_list:
+            continue
+        examined_list.add(str(current))
+        print("goal checking")
+        print(current[1]['state'], current[1]['cost'])
+        if current[1]['state'] == goal:
+            print("success!")
+            return
+        
+        print("move/add unexamined")
+        for i in move(current[1]['state']):
+            cur_node = node_constructor(i, current, goal)
+            if (str((cur_node["cost"], cur_node)) not in examined_list):
+                unexamined.add((cur_node["cost"], cur_node))
+        
 
-	while(not pq.empty() and pq.get() != goal):
-		print(pq.get())
-		for i in move(pq.get()):
-			cur_node = node_constructor(i, start, goal)
-			pq.put((cur_node["cost"], cur_node))
-	print(pq.get())
 
 
 
 
 
 
-
-astar([[1,2,3],[4,5,6],[7,0,8]], [[1,2,3], [4,5,6],[0,7,8]])
+astar([[1,2,3],[4,5,6],[7,0,8]], [[1,3,2], [5,4,6],[0,7,8]])
 # print(mandistheur([[1,2,3], [4,5,6], [7,9,8]], [[1,2,3], [4,5,6], [7,8,9]]))
 # print(index_2d([[1,2,3], [4,5,6], [7,8,9]], 3))
 # print(move([[1,2,3], [4,5,6], [7,0,8]]))
