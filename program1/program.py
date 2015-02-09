@@ -32,11 +32,11 @@ def swapper(input_state, dir):
 def move(state):
 	return [(s, a, 1) for s, a in [(swapper(state, dir), dir) for dir in ['up', 'down', 'right', 'left']] if s != None]
 
-def node_constructor(saw, heuristic, prev_states, prev_cost):
-    new_history = eval(str(prev_states)) #again, since deepcopy is so slow
-    new_history.append(saw[0])
+def node_constructor(saw, heuristic, prev, prev_cost):
+    # new_history = eval(str(prev_states)) #again, since deepcopy is so slow
+    # new_history.append(saw[0])
     return {'cost': saw[2] + prev_cost + heuristic(saw[0]),
-            'prev': new_history,
+            'prev': prev,
             'action': saw[1],
             'state': saw[0]}
 
@@ -55,7 +55,7 @@ def mandistheur(start, goal):
 def astar(start, goal_func, heuristic):
     examined_list = set()
     unexamined = unipq()
-    cur_node = node_constructor((start, None, heuristic(start)), heuristic, list(), 0)
+    cur_node = node_constructor((start, None, heuristic(start)), heuristic, None, 0)
     unexamined.add((cur_node["cost"], cur_node))
     while(not unexamined.empty()):
         current = unexamined.pop()
@@ -63,9 +63,15 @@ def astar(start, goal_func, heuristic):
             continue
         examined_list.add(str(current[1]["state"]))
         if goal_func(current[1]['state']):
-            return current[1]['prev']
+            return_list = []
+            tmp = current[1]
+            while (tmp != None):
+                return_list.append(tmp['state'])
+                tmp = tmp['prev']
+                # print(tmp)
+            return return_list
         for i in move(current[1]['state']):
-            cur_node = node_constructor(i, heuristic, current[1]['prev'], current[1]['cost'])
+            cur_node = node_constructor(i, heuristic, current[1], current[1]['cost'])
             if (str(cur_node["state"]) not in examined_list):
                 unexamined.add((cur_node["cost"], cur_node))
     return []
