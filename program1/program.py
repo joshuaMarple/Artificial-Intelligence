@@ -1,7 +1,8 @@
 #! /bin/python2
 
-# from copy import deepcopy
-from unipq import unipq
+# from copy import copy
+# from unipq import unipq
+from Queue import PriorityQueue
 from functools import partial
 
 def index_2d(myList, v):
@@ -10,7 +11,9 @@ def index_2d(myList, v):
             return (i, x.index(v))
 
 def swapper(input_state, dir):
-    state = eval(str(input_state)) #since deepcopy is so slow
+    state = []
+    for i in input_state:
+        state.append(list(i))
     swap_idx = index_2d(state, 0)
     try:
         if (dir == 'up'):
@@ -54,11 +57,11 @@ def mandistheur(start, goal):
     
 def astar(start, goal_func, heuristic):
     examined_list = set()
-    unexamined = unipq()
+    unexamined = PriorityQueue()
     cur_node = node_constructor((start, None, heuristic(start)), heuristic, None, 0)
-    unexamined.add((cur_node["cost"], cur_node))
+    unexamined.put((cur_node["cost"], cur_node))
     while(not unexamined.empty()):
-        current = unexamined.pop()
+        current = unexamined.get()
         if str(current[1]["state"]) in examined_list:
             continue
         examined_list.add(str(current[1]["state"]))
@@ -73,7 +76,7 @@ def astar(start, goal_func, heuristic):
         for i in move(current[1]['state']):
             cur_node = node_constructor(i, heuristic, current[1], current[1]['cost'])
             if (str(cur_node["state"]) not in examined_list):
-                unexamined.add((cur_node["cost"], cur_node))
+                unexamined.put((cur_node["cost"], cur_node))
     return []
 
 def tile_solver(start, goal_inp):
@@ -95,8 +98,8 @@ def tile_solver(start, goal_inp):
 goal_state = [[1,2,3], [4,5,6],[7,8,0]]
 start_states = [ [[6, 4, 2],[1, 5, 3],[7, 0, 8]],
                  [[6, 4, 2],[8, 5, 3],[1, 0, 7]],
-                 [[8, 0, 7],[6, 5, 4],[3, 2, 1]] #,
-                 # [[6, 4, 7],[8, 5, 0],[3, 2, 1]] #,
-                 # [[1, 2, 3],[4, 5, 6],[8, 7, 0]] ]
-                 ]
+                 [[8, 0, 7],[6, 5, 4],[3, 2, 1]],
+                 [[6, 4, 7],[8, 5, 0],[3, 2, 1]],
+                 [[1, 2, 3],[4, 5, 6],[8, 7, 0]] ]
+                 # ]
 map((lambda x : tile_solver(x, goal_state)), start_states)
