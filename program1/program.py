@@ -1,4 +1,6 @@
-from copy import deepcopy
+#! /bin/python2
+
+# from copy import deepcopy
 from unipq import unipq
 from functools import partial
 
@@ -8,7 +10,7 @@ def index_2d(myList, v):
             return (i, x.index(v))
 
 def swapper(input_state, dir):
-    state = deepcopy(input_state)
+    state = eval(str(input_state)) #since deepcopy is so slow
     swap_idx = index_2d(state, 0)
     try:
         if (dir == 'up'):
@@ -31,7 +33,7 @@ def move(state):
 	return [(s, a, 1) for s, a in [(swapper(state, dir), dir) for dir in ['up', 'down', 'right', 'left']] if s != None]
 
 def node_constructor(saw, heuristic, prev_states, prev_cost):
-    new_history = deepcopy(prev_states)
+    new_history = eval(str(prev_states)) #again, since deepcopy is so slow
     new_history.append(saw[0])
     return {'cost': saw[2] + prev_cost + heuristic(saw[0]),
             'prev': new_history,
@@ -87,8 +89,8 @@ def tile_solver(start, goal_inp):
 goal_state = [[1,2,3], [4,5,6],[7,8,0]]
 start_states = [ [[6, 4, 2],[1, 5, 3],[7, 0, 8]],
                  [[6, 4, 2],[8, 5, 3],[1, 0, 7]],
-                 [[8, 0, 7],[6, 5, 4],[3, 2, 1]],
-                 [[6, 4, 7],[8, 5, 0],[3, 2, 1]],
-                 [[1, 2, 3],[4, 5, 6],[8, 7, 0]] ]
-
+                 [[8, 0, 7],[6, 5, 4],[3, 2, 1]] #,
+                 # [[6, 4, 7],[8, 5, 0],[3, 2, 1]] #,
+                 # [[1, 2, 3],[4, 5, 6],[8, 7, 0]] ]
+                 ]
 map((lambda x : tile_solver(x, goal_state)), start_states)
