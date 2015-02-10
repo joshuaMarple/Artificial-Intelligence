@@ -1,9 +1,9 @@
 #! /bin/python2
 
-# from copy import copy
-# from unipq import unipq
+from unipq import unipq
 from Queue import PriorityQueue
 from functools import partial
+import timeit
 
 def index_2d(myList, v):
     for i, x in enumerate(myList):
@@ -36,8 +36,6 @@ def move(state):
 	return [(s, a, 1) for s, a in [(swapper(state, dir), dir) for dir in ['up', 'down', 'right', 'left']] if s != None]
 
 def node_constructor(saw, heuristic, prev, prev_cost):
-    # new_history = eval(str(prev_states)) #again, since deepcopy is so slow
-    # new_history.append(saw[0])
     return {'cost': saw[2] + prev_cost + heuristic(saw[0]),
             'prev': prev,
             'action': saw[1],
@@ -57,7 +55,7 @@ def mandistheur(start, goal):
     
 def astar(start, goal_func, heuristic):
     examined_list = set()
-    unexamined = PriorityQueue()
+    unexamined = unipq()
     cur_node = node_constructor((start, None, heuristic(start)), heuristic, None, 0)
     unexamined.put((cur_node["cost"], cur_node))
     while(not unexamined.empty()):
@@ -71,7 +69,6 @@ def astar(start, goal_func, heuristic):
             while (tmp != None):
                 return_list.append(tmp['state'])
                 tmp = tmp['prev']
-                # print(tmp)
             return return_list
         for i in move(current[1]['state']):
             cur_node = node_constructor(i, heuristic, current[1], current[1]['cost'])
@@ -101,5 +98,4 @@ start_states = [ [[6, 4, 2],[1, 5, 3],[7, 0, 8]],
                  [[8, 0, 7],[6, 5, 4],[3, 2, 1]],
                  [[6, 4, 7],[8, 5, 0],[3, 2, 1]],
                  [[1, 2, 3],[4, 5, 6],[8, 7, 0]] ]
-                 # ]
-map((lambda x : tile_solver(x, goal_state)), start_states)
+print(timeit.timeit('map((lambda x : tile_solver(x, goal_state)), start_states)', number= 1, setup = "from __main__ import tile_solver, goal_state, start_states"))

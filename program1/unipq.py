@@ -8,11 +8,11 @@ class unipq():
     def __init__(self):
         self.all_items = list()
         
-    def add(self, item):
+    def put(self, item):
         if item not in self.all_items:
             heappush(self.all_items, item)
 
-    def pop(self):
+    def get(self):
         return heappop(self.all_items)
         
     def __contains__(self, item):
