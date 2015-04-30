@@ -7,16 +7,25 @@ class unipq():
 
     def __init__(self):
         self.all_items = list()
+        self.checker = {}
         
     def put(self, item):
-        if item not in self.all_items:
+        try:
+            self.checker[self.hasher(item)] == True
+        except KeyError:
             heappush(self.all_items, item)
+            self.checker[self.hasher(item)] = True
 
     def get(self):
-        return heappop(self.all_items)
+        tmp = heappop(self.all_items)
+        del self.checker[self.hasher(tmp)]
+        return tmp
         
     def __contains__(self, item):
-        return item in self.all_items
+        try:
+            return self.checker[self.hasher(item)]
+        except KeyError:
+            return False
 
     def show(self):
         for i in self.all_items:
